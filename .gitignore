@@ -1,0 +1,23 @@
+# Ignore .env file (contains sensitive data)
+.env
+
+# Ignore vendor directory
+/vendor/
+
+# Ignore storage files (database, logs)
+/storage/*.sqlite
+/storage/logs/*.log
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore composer lock (for library, but keep for project)
+# composer.lock
