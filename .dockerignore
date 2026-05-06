@@ -1,0 +1,6 @@
+.env
+.git/
+vendor/
+bridge/node_modules/
+storage/*.sqlite
+.github/
