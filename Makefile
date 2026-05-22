@@ -31,5 +31,14 @@ migrate:
 schedule-run:
 	php cron/schedule-runner.php
 
+bridge-install:
+	cd bridge && npm install
+
+bridge-start:
+	cd bridge && npm start
+
+bridge-stop:
+	-kill `lsof -ti :3001` 2>/dev/null
+
 clean:
 	rm -rf storage/database.sqlite storage/logs/*.log
