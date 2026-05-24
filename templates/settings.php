@@ -275,7 +275,13 @@
         const modelPresets = {
             openrouter: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'claude-3.5-sonnet', 'claude-3-haiku', 'llama-3.1-70b-instruct', 'llama-3.1-8b-instruct', 'mistral-large', 'mixtral-8x7b-instruct', 'deepseek-chat', 'qwen-2-72b'],
             groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768', 'gemma2-9b-it', 'llama3-70b-8192', 'llama3-8b-8192'],
-            gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-3-flash-preview', 'gemini-3-pro-preview'],
+            gemini: [
+                'gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.5-flash-lite',
+                'gemini-2.0-flash', 'gemini-2.0-flash-lite',
+                'gemini-flash-latest', 'gemini-pro-latest', 'gemini-flash-lite-latest',
+                'gemini-3.5-flash', 'gemini-3.1-flash-lite',
+                'gemini-3-flash-preview', 'gemini-3-pro-preview', 'gemini-3.1-pro-preview',
+            ],
             custom: ['custom']
         };
 
