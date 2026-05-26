@@ -5,22 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - WhatsAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={darkMode:'class'}</script>
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-<body class="bg-gray-50">
-    <nav class="bg-white shadow-sm border-b">
+<body class="bg-app">
+    <nav class="bg-white shadow-sm border-b nav-bg" style="border-color:var(--border)">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
+            <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-8">
-                    <h1 class="text-xl font-bold text-gray-900">WhatsAI</h1>
+                    <h1 class="text-xl font-bold" style="color:var(--text-primary)">WhatsAI</h1>
                     <div class="hidden md:flex space-x-4">
-                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Dashboard</a>
+                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Dashboard</a>
                         <a href="/settings" class="px-3 py-2 rounded-md text-sm font-medium bg-blue-100 text-blue-700">Settings</a>
-                        <a href="/scheduler" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Scheduler</a>
-                        <a href="/messages" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Messages</a>
-                        <a href="/contacts" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Contacts</a>
-                        <a href="/setup" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Setup Guide</a>
+                        <a href="/scheduler" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Scheduler</a>
+                        <a href="/messages" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Messages</a>
+                        <a href="/contacts" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Contacts</a>
+                        <a href="/setup" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Setup Guide</a>
                     </div>
                 </div>
+                <div class="flex items-center gap-2">
+                    <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+                    <button id="menuToggle" class="md:hidden theme-toggle" title="Menu">☰</button>
+                </div>
+            </div>
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <a href="/" class="text-sm font-medium">Dashboard</a>
+                <a href="/settings" class="text-sm font-medium">Settings</a>
+                <a href="/scheduler" class="text-sm font-medium">Scheduler</a>
+                <a href="/messages" class="text-sm font-medium">Messages</a>
+                <a href="/contacts" class="text-sm font-medium">Contacts</a>
+                <a href="/setup" class="text-sm font-medium">Setup Guide</a>
             </div>
         </div>
     </nav>
@@ -194,23 +208,22 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6" style="background-color:var(--bg-card)">
-                <h2 class="text-lg font-semibold mb-4" style="color:var(--text-primary)">🧪 Test AI Configuration</h2>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-semibold mb-4">🧪 Test Configuration</h2>
                 <p class="text-sm mb-4" style="color:var(--text-secondary)">Verify your AI settings are working before saving.</p>
-                <div class="flex flex-wrap items-center gap-3 mb-4">
-                    <select id="testProvider" class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]" style="background-color:var(--input-bg);color:var(--text-primary);border-color:var(--border)">
-                        <option value="openrouter">OpenRouter</option>
-                        <option value="groq">Groq</option>
-                        <option value="gemini">Gemini</option>
-                        <option value="custom">Custom</option>
+                <div class="flex items-center gap-3 mb-4">
+                    <select id="testProvider" class="border rounded-lg px-3 py-2 text-sm flex-1">
+                        <option value="openrouter" <?= $config['ai']['provider'] === 'openrouter' ? 'selected' : '' ?>>OpenRouter</option>
+                        <option value="groq" <?= $config['ai']['provider'] === 'groq' ? 'selected' : '' ?>>Groq</option>
+                        <option value="gemini" <?= $config['ai']['provider'] === 'gemini' ? 'selected' : '' ?>>Gemini</option>
+                        <option value="custom" <?= $config['ai']['provider'] === 'custom' ? 'selected' : '' ?>>Custom</option>
                     </select>
-                    <input type="text" id="testModel" value="<?= htmlspecialchars($config['ai']['model']) ?>" placeholder="Model name" class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]" style="background-color:var(--input-bg);color:var(--text-primary);border-color:var(--border)">
+                    <input type="text" id="testModel" value="<?= htmlspecialchars($config['ai']['model']) ?>" placeholder="Model" class="border rounded-lg px-3 py-2 text-sm flex-1">
                     <button type="button" onclick="testConfig()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition whitespace-nowrap">
                         Test Now
                     </button>
-                    <button type="button" onclick="document.getElementById('testResult').classList.add('hidden')" class="px-3 py-2 rounded-lg text-sm font-medium hover:opacity-80" style="color:var(--text-secondary)">Clear</button>
                 </div>
-                <div id="testResult" class="hidden p-4 rounded-lg text-sm border"></div>
+                <div id="testResult" class="hidden p-3 rounded-lg text-sm"></div>
             </div>
 
             <button type="submit" id="webscraperSubmit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition">
@@ -220,6 +233,44 @@
     </main>
 
     <script>
+        async function testConfig() {
+            const provider = document.getElementById('testProvider').value;
+            const model = document.getElementById('testModel').value;
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.className = 'p-4 rounded-lg text-sm';
+            resultDiv.style.backgroundColor = 'var(--bg-card)';
+            resultDiv.style.border = '1px solid var(--border)';
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<span class="text-gray-500">⏳ Testing...</span>';
+
+            const formData = new FormData();
+            formData.append('provider', provider);
+            formData.append('model', model);
+
+            try {
+                const res = await fetch('/api/test-ai', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    resultDiv.className = 'p-4 rounded-lg text-sm';
+                    resultDiv.style.backgroundColor = 'var(--success-bg)';
+                    resultDiv.style.border = '1px solid var(--success-border)';
+                    resultDiv.style.color = 'var(--success-text)';
+                    resultDiv.innerHTML = '<strong>✅ Configuration Working!</strong><br>Response: ' + data.content + '<br><span class="text-xs opacity-75">Model: ' + (data.model || model) + '</span>';
+                } else {
+                    resultDiv.className = 'p-4 rounded-lg text-sm';
+                    resultDiv.style.backgroundColor = 'var(--error-bg)';
+                    resultDiv.style.border = '1px solid var(--error-border)';
+                    resultDiv.style.color = 'var(--error-text)';
+                    resultDiv.innerHTML = '<strong>❌ Configuration Failed</strong><br>' + (data.error || 'Unknown error — check your API key and model name.');
+                }
+            } catch (e) {
+                resultDiv.className = 'p-4 rounded-lg text-sm';
+                resultDiv.style.backgroundColor = 'var(--error-bg)';
+                resultDiv.style.border = '1px solid var(--error-border)';
+                resultDiv.style.color = 'var(--error-text)';
+                resultDiv.innerHTML = '<strong>❌ Network Error</strong><br>' + e.message;
+            }
+        }
         // Model presets for each provider
         const modelPresets = {
             openrouter: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'claude-3.5-sonnet', 'claude-3-haiku', 'llama-3.1-70b-instruct', 'llama-3.1-8b-instruct', 'mistral-large', 'mixtral-8x7b-instruct', 'deepseek-chat', 'qwen-2-72b'],
@@ -273,46 +324,10 @@
                     opt.textContent = m;
                     if (m === '<?= $config['ai']['model'] ?>') opt.selected = true;
                     select.appendChild(opt);
-        });
-
-        async function testConfig() {
-            const provider = document.getElementById('testProvider').value;
-            const model = document.getElementById('testModel').value;
-            const resultDiv = document.getElementById('testResult');
-            resultDiv.className = 'p-4 rounded-lg text-sm border';
-            resultDiv.style.backgroundColor = 'var(--bg-card)';
-            resultDiv.style.borderColor = 'var(--border)';
-            resultDiv.style.color = 'var(--text-primary)';
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = '⏳ Testing AI connection...';
-
-            const fd = new FormData();
-            fd.append('provider', provider);
-            fd.append('model', model);
-
-            try {
-                const res = await fetch('/api/test-ai', { method: 'POST', body: fd });
-                const data = await res.json();
-                if (data.success) {
-                    resultDiv.style.backgroundColor = 'var(--success-bg)';
-                    resultDiv.style.borderColor = 'var(--success-border)';
-                    resultDiv.style.color = 'var(--success-text)';
-                    resultDiv.innerHTML = '<strong>✅ Configuration Working!</strong><br>Response: ' + data.content + '<br><span style="opacity:0.75;font-size:0.75rem">Model: ' + (data.model || model) + '</span>';
-                } else {
-                    resultDiv.style.backgroundColor = 'var(--error-bg)';
-                    resultDiv.style.borderColor = 'var(--error-border)';
-                    resultDiv.style.color = 'var(--error-text)';
-                    resultDiv.innerHTML = '<strong>❌ Configuration Failed</strong><br>' + (data.error || 'Check your API key and model name.');
-                }
-            } catch (e) {
-                resultDiv.style.backgroundColor = 'var(--error-bg)';
-                resultDiv.style.borderColor = 'var(--error-border)';
-                resultDiv.style.color = 'var(--error-text)';
-                resultDiv.innerHTML = '<strong>❌ Network Error</strong><br>' + e.message;
-            }
-        }
+                });
             }
         });
     </script>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

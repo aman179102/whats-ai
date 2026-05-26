@@ -5,22 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contacts - WhatsAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={darkMode:'class'}</script>
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-<body class="bg-gray-50">
-    <nav class="bg-white shadow-sm border-b">
+<body class="bg-app">
+    <nav class="bg-white shadow-sm border-b nav-bg" style="border-color:var(--border)">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-16">
+            <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-8">
-                    <h1 class="text-xl font-bold text-gray-900">WhatsAI</h1>
+                    <h1 class="text-xl font-bold" style="color:var(--text-primary)">WhatsAI</h1>
                     <div class="hidden md:flex space-x-4">
-                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Dashboard</a>
-                        <a href="/settings" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Settings</a>
-                        <a href="/scheduler" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Scheduler</a>
-                        <a href="/messages" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Messages</a>
+                        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Dashboard</a>
+                        <a href="/settings" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Settings</a>
+                        <a href="/scheduler" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Scheduler</a>
+                        <a href="/messages" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Messages</a>
                         <a href="/contacts" class="px-3 py-2 rounded-md text-sm font-medium bg-blue-100 text-blue-700">Contacts</a>
-                        <a href="/setup" class="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">Setup Guide</a>
+                        <a href="/setup" class="px-3 py-2 rounded-md text-sm font-medium" style="color:var(--text-secondary)">Setup Guide</a>
                     </div>
                 </div>
+                <div class="flex items-center gap-2">
+                    <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+                    <button id="menuToggle" class="md:hidden theme-toggle" title="Menu">☰</button>
+                </div>
+            </div>
+            <div id="mobileMenu" class="mobile-menu md:hidden">
+                <a href="/" class="text-sm font-medium">Dashboard</a>
+                <a href="/settings" class="text-sm font-medium">Settings</a>
+                <a href="/scheduler" class="text-sm font-medium">Scheduler</a>
+                <a href="/messages" class="text-sm font-medium">Messages</a>
+                <a href="/contacts" class="text-sm font-medium">Contacts</a>
+                <a href="/setup" class="text-sm font-medium">Setup Guide</a>
             </div>
         </div>
     </nav>
@@ -79,5 +93,6 @@
             </div>
         </div>
     </main>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>
