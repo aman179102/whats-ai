@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: whatsai
+    env: php
+    buildCommand: composer install --no-dev
+    startCommand: php -S 0.0.0.0:10000 -t public
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_PATH
+        value: /var/data/storage/database.sqlite
+    disk:
+      name: data
+      mountPath: /var/data/storage
+      sizeGB: 1
