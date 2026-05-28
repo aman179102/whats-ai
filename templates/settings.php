@@ -194,6 +194,25 @@
                 </div>
             </div>
 
+            <div class="bg-white rounded-lg shadow p-6" style="background-color:var(--bg-card)">
+                <h2 class="text-lg font-semibold mb-4" style="color:var(--text-primary)">🧪 Test AI Configuration</h2>
+                <p class="text-sm mb-4" style="color:var(--text-secondary)">Verify your AI settings are working before saving.</p>
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <select id="testProvider" class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]" style="background-color:var(--input-bg);color:var(--text-primary);border-color:var(--border)">
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="groq">Groq</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <input type="text" id="testModel" value="<?= htmlspecialchars($config['ai']['model']) ?>" placeholder="Model name" class="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[140px]" style="background-color:var(--input-bg);color:var(--text-primary);border-color:var(--border)">
+                    <button type="button" onclick="testConfig()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition whitespace-nowrap">
+                        Test Now
+                    </button>
+                    <button type="button" onclick="document.getElementById('testResult').classList.add('hidden')" class="px-3 py-2 rounded-lg text-sm font-medium hover:opacity-80" style="color:var(--text-secondary)">Clear</button>
+                </div>
+                <div id="testResult" class="hidden p-4 rounded-lg text-sm border"></div>
+            </div>
+
             <button type="submit" id="webscraperSubmit" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition">
                 Save Settings
             </button>
@@ -254,7 +273,44 @@
                     opt.textContent = m;
                     if (m === '<?= $config['ai']['model'] ?>') opt.selected = true;
                     select.appendChild(opt);
-                });
+        });
+
+        async function testConfig() {
+            const provider = document.getElementById('testProvider').value;
+            const model = document.getElementById('testModel').value;
+            const resultDiv = document.getElementById('testResult');
+            resultDiv.className = 'p-4 rounded-lg text-sm border';
+            resultDiv.style.backgroundColor = 'var(--bg-card)';
+            resultDiv.style.borderColor = 'var(--border)';
+            resultDiv.style.color = 'var(--text-primary)';
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '⏳ Testing AI connection...';
+
+            const fd = new FormData();
+            fd.append('provider', provider);
+            fd.append('model', model);
+
+            try {
+                const res = await fetch('/api/test-ai', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    resultDiv.style.backgroundColor = 'var(--success-bg)';
+                    resultDiv.style.borderColor = 'var(--success-border)';
+                    resultDiv.style.color = 'var(--success-text)';
+                    resultDiv.innerHTML = '<strong>✅ Configuration Working!</strong><br>Response: ' + data.content + '<br><span style="opacity:0.75;font-size:0.75rem">Model: ' + (data.model || model) + '</span>';
+                } else {
+                    resultDiv.style.backgroundColor = 'var(--error-bg)';
+                    resultDiv.style.borderColor = 'var(--error-border)';
+                    resultDiv.style.color = 'var(--error-text)';
+                    resultDiv.innerHTML = '<strong>❌ Configuration Failed</strong><br>' + (data.error || 'Check your API key and model name.');
+                }
+            } catch (e) {
+                resultDiv.style.backgroundColor = 'var(--error-bg)';
+                resultDiv.style.borderColor = 'var(--error-border)';
+                resultDiv.style.color = 'var(--error-text)';
+                resultDiv.innerHTML = '<strong>❌ Network Error</strong><br>' + e.message;
+            }
+        }
             }
         });
     </script>
