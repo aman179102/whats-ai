@@ -18,6 +18,7 @@ try {
     match ($provider) {
         'meta' => Handler::handleMeta(),
         'twilio' => Handler::handleTwilio(),
+        'webscraper' => Handler::handleWebScraper(),
         default => throw new \InvalidArgumentException("Unknown webhook provider: $provider"),
     };
 } catch (\Exception $e) {

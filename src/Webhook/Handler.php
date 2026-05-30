@@ -110,6 +110,69 @@ class Handler
         echo 'OK';
     }
 
+    public static function handleWebScraper(): void
+    {
+        $app = App::getInstance();
+        $config = $app->getConfig();
+        $db = $app->getDb()->getPdo();
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $app->getLogger()->info('Bridge webhook received', ['payload' => $input]);
+
+        $from = $input['from'] ?? '';
+        $body = $input['body'] ?? '';
+        $msgId = $input['id'] ?? '';
+
+        if (empty($from) || empty($body)) {
+            http_response_code(200);
+            echo 'OK';
+            return;
+        }
+
+        $stmt = $db->prepare("INSERT INTO contacts (name, phone, provider) VALUES (:name, :phone, 'webscraper') ON CONFLICT(phone) DO UPDATE SET name=:name2, updated_at=CURRENT_TIMESTAMP");
+        $stmt->execute([
+            'name' => $from,
+            'phone' => $from,
+            'name2' => $from,
+        ]);
+
+        $contactId = $db->lastInsertId() ?: $db->query("SELECT id FROM contacts WHERE phone='$from'")->fetchColumn();
+
+        $stmt = $db->prepare("INSERT INTO messages (contact_id, direction, content, external_id, status) VALUES (:contact_id, 'in', :content, :external_id, 'received')");
+        $stmt->execute([
+            'contact_id' => $contactId,
+            'content' => $body,
+            'external_id' => $msgId,
+        ]);
+
+        if ($config['ai']['provider'] && !empty($config['ai']['model'])) {
+            try {
+                $ai = AIFactory::create($config['ai']['provider'], $config['ai']);
+                $result = $ai->generate($body);
+
+                if ($result['success']) {
+                    $whatsapp = \App\WhatsApp\Factory::create($config['whatsapp']['provider'], $config['whatsapp']);
+                    $sendResult = $whatsapp->send($from, $result['content']);
+
+                    $stmt = $db->prepare("INSERT INTO messages (contact_id, direction, content, ai_provider, ai_model, external_id, status) VALUES (:contact_id, 'out', :content, :ai_provider, :ai_model, :external_id, :status)");
+                    $stmt->execute([
+                        'contact_id' => $contactId,
+                        'content' => $result['content'],
+                        'ai_provider' => $config['ai']['provider'],
+                        'ai_model' => $result['model'] ?? $config['ai']['model'],
+                        'external_id' => $sendResult['external_id'] ?? '',
+                        'status' => $sendResult['success'] ? 'sent' : 'failed',
+                    ]);
+                }
+            } catch (\Exception $e) {
+                $app->getLogger()->error('Auto-reply failed', ['error' => $e->getMessage()]);
+            }
+        }
+
+        http_response_code(200);
+        echo 'OK';
+    }
+
     public static function handleTwilio(): void
     {
         $app = App::getInstance();

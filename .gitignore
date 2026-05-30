@@ -15,6 +15,11 @@
 *.swo
 *~
 
+# Ignore bridge node_modules and session data
+/bridge/node_modules/
+/bridge/.wwebjs_auth/
+/bridge/.wwebjs_cache/
+
 # Ignore OS files
 .DS_Store
 Thumbs.db

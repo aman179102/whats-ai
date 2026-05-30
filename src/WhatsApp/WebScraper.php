@@ -4,13 +4,12 @@ namespace App\WhatsApp;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use App\Core\Bridge;
 
 class WebScraper implements ProviderInterface
 {
     private Client $client;
     private array $config;
-
-    private const WARNING = '⚠️ WARNING: This method is UNOFFICIAL and violates WhatsApp\'s Terms of Service. Your phone number can be PERMANENTLY BANNED. WhatsApp may also block your device. Use at your own risk. This method relies on reverse-engineering WhatsApp Web and may break at any time without notice.';
 
     public function __construct(array $config)
     {
@@ -22,6 +21,12 @@ class WebScraper implements ProviderInterface
 
     public function send(string $to, string $message): array
     {
+        // Try local bridge first (WhatsApp Web via Node.js)
+        if (Bridge::isRunning()) {
+            return Bridge::send($to, $message);
+        }
+
+        // Fallback to WAHA/remote API
         try {
             $response = $this->client->post($this->config['api_url'] . '/send', [
                 'headers' => [
@@ -51,16 +56,16 @@ class WebScraper implements ProviderInterface
 
     public function getName(): string
     {
-        return 'Web Scraper (Unofficial)';
+        return 'WhatsApp Web (Bridge)';
     }
 
     public function isAvailable(): bool
     {
-        return !empty($this->config['api_url']) && !empty($this->config['api_key']);
+        return Bridge::isRunning() || (!empty($this->config['api_url']) && !empty($this->config['api_key']));
     }
 
     public function getWarning(): ?string
     {
-        return self::WARNING;
+        return '⚠️ Unofficial method. WhatsApp may ban your account. Use at your own risk.';
     }
 }

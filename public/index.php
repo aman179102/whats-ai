@@ -282,6 +282,12 @@ $router->post('/api/send-message', function () {
     }
 });
 
+// API: Bridge status
+$router->get('/api/bridge/status', function () {
+    header('Content-Type: application/json');
+    echo json_encode(\App\Core\Bridge::getStatus());
+});
+
 // API: Schedule actions (pause/cancel/delete)
 $router->post('/api/schedule/action', function () {
     header('Content-Type: application/json');

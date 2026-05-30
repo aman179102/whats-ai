@@ -112,16 +112,38 @@
                     </div>
                 </div>
 
-                <!-- Web Scraper Fields -->
+                <!-- Web Scraper / Bridge Fields -->
                 <div id="webscraperFields" class="space-y-4 <?= $config['whatsapp']['provider'] === 'webscraper' ? '' : 'hidden' ?>">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">API URL</label>
-                        <input type="text" name="web_scraper_api_url" value="<?= htmlspecialchars($config['whatsapp']['webscraper']['api_url'] ?? '') ?>" class="w-full border rounded-lg px-3 py-2" placeholder="http://localhost:3000">
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-blue-800 font-semibold mb-2">💡 WhatsApp Web Bridge (Easiest Method)</p>
+                        <p class="text-sm text-blue-700 mb-3">No API keys needed! Just run one command and scan QR code with your phone.</p>
+                        <div class="bg-white border rounded-lg p-3 space-y-2 text-sm">
+                            <p><strong>Step 1:</strong> Install <a href="https://nodejs.org" target="_blank" class="text-blue-600 underline">Node.js</a> on your computer</p>
+                            <p><strong>Step 2:</strong> Open terminal in the <code class="bg-gray-100 px-1 rounded">bridge/</code> folder</p>
+                            <p><strong>Step 3:</strong> Run: <code class="bg-gray-100 px-1 rounded">npm install && npm start</code></p>
+                            <p><strong>Step 4:</strong> Open WhatsApp on phone → Linked Devices → Scan QR code</p>
+                            <p><strong>Step 5:</strong> Done! Check Dashboard for connection status ✅</p>
+                        </div>
+                        <div id="bridgeSetupStatus" class="mt-3">
+                            <button type="button" onclick="checkBridgeSetup()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition">
+                                🔍 Check Bridge Status
+                            </button>
+                            <div id="bridgeSetupResult" class="mt-2"></div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">API Key</label>
-                        <input type="password" name="web_scraper_api_key" value="<?= htmlspecialchars($config['whatsapp']['webscraper']['api_key'] ?? '') ?>" class="w-full border rounded-lg px-3 py-2">
-                    </div>
+                    <details class="text-sm text-gray-500 cursor-pointer">
+                        <summary class="font-medium">Advanced: WAHA API (for developers)</summary>
+                        <div class="mt-2 space-y-3 p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">API URL</label>
+                                <input type="text" name="web_scraper_api_url" value="<?= htmlspecialchars($config['whatsapp']['webscraper']['api_url'] ?? '') ?>" class="w-full border rounded-lg px-3 py-2" placeholder="http://localhost:3000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">API Key</label>
+                                <input type="password" name="web_scraper_api_key" value="<?= htmlspecialchars($config['whatsapp']['webscraper']['api_key'] ?? '') ?>" class="w-full border rounded-lg px-3 py-2">
+                            </div>
+                        </div>
+                    </details>
                 </div>
             </div>
 
@@ -315,6 +337,26 @@
                 opt.textContent = m;
                 select.appendChild(opt);
             });
+        }
+
+        async function checkBridgeSetup() {
+            const resultDiv = document.getElementById('bridgeSetupResult');
+            resultDiv.innerHTML = '<span class="text-gray-500">⏳ Checking...</span>';
+            try {
+                const res = await fetch('/api/bridge/status');
+                const data = await res.json();
+                if (data.running && data.connected) {
+                    resultDiv.innerHTML = '<span class="text-green-600 font-semibold">✅ Bridge is running & WhatsApp is linked!</span>';
+                } else if (data.running && data.qr) {
+                    resultDiv.innerHTML = '<span class="text-blue-600 font-semibold">📱 Bridge running! <a href="/" class="underline">Go to Dashboard</a> to scan QR code.</span>';
+                } else if (data.running) {
+                    resultDiv.innerHTML = '<span class="text-yellow-600 font-semibold">⏳ Bridge running — waiting for QR...</span>';
+                } else {
+                    resultDiv.innerHTML = '<span class="text-red-600 font-semibold">❌ Bridge not running.</span><br><span class="text-sm text-gray-600">Run in bridge/ folder: <code class="bg-gray-100 px-1 rounded">npm install && npm start</code></span>';
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<span class="text-red-600 font-semibold">❌ Bridge not running.</span><br><span class="text-sm text-gray-600">Run in bridge/ folder: <code class="bg-gray-100 px-1 rounded">npm install && npm start</code></span>';
+            }
         }
 
         // Initialize model presets on load

@@ -129,9 +129,45 @@
                         <?php endif; ?>
                     </div>
                     <?php if ($wpProvider === 'webscraper'): ?>
-                        <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <p class="text-sm text-red-700">⚠️ Unofficial method active. Your WhatsApp number may be banned.</p>
+                        <div id="bridgeStatus" class="mt-4 p-3 bg-gray-50 border rounded-lg">
+                            <p class="text-sm text-gray-600">🔍 Checking bridge connection...</p>
                         </div>
+                        <div id="bridgeQr" class="mt-4 hidden">
+                            <p class="text-sm font-medium mb-2">📱 Scan this QR with WhatsApp:</p>
+                            <p class="text-xs text-gray-500 mb-2">Open WhatsApp → Linked Devices → Link a Device</p>
+                            <img id="qrImage" src="" alt="QR Code" class="border rounded-lg mx-auto" style="max-width: 256px;">
+                        </div>
+                        <script>
+                        async function checkBridge() {
+                            try {
+                                const res = await fetch('/api/bridge/status');
+                                const data = await res.json();
+                                const div = document.getElementById('bridgeStatus');
+                                if (data.running && data.connected) {
+                                    div.className = 'mt-4 p-3 bg-green-50 border border-green-200 rounded-lg';
+                                    div.innerHTML = '<p class="text-sm text-green-700">✅ Bridge connected & WhatsApp linked!</p>';
+                                    document.getElementById('bridgeQr').classList.add('hidden');
+                                } else if (data.running && data.qr) {
+                                    div.className = 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg';
+                                    div.innerHTML = '<p class="text-sm text-blue-700">📱 Bridge running — scan the QR code to link WhatsApp</p>';
+                                    const qrDiv = document.getElementById('bridgeQr');
+                                    qrDiv.classList.remove('hidden');
+                                    document.getElementById('qrImage').src = data.qr;
+                                } else if (data.running) {
+                                    div.className = 'mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg';
+                                    div.innerHTML = '<p class="text-sm text-yellow-700">⏳ Bridge running — waiting for QR code...</p>';
+                                } else {
+                                    div.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+                                    div.innerHTML = '<p class="text-sm text-red-700">❌ Bridge not running. Start it: <code class="bg-red-100 px-1 rounded">cd bridge && npm install && npm start</code></p>';
+                                }
+                            } catch (e) {
+                                document.getElementById('bridgeStatus').className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg';
+                                document.getElementById('bridgeStatus').innerHTML = '<p class="text-sm text-red-700">❌ Bridge not running. Start it: <code class="bg-red-100 px-1 rounded">cd bridge && npm install && npm start</code></p>';
+                            }
+                        }
+                        checkBridge();
+                        setInterval(checkBridge, 5000);
+                        </script>
                     <?php endif; ?>
                 </div>
             </div>

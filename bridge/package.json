@@ -1,0 +1,14 @@
+{
+  "name": "whatsai-bridge",
+  "version": "1.0.0",
+  "description": "WhatsApp Web Bridge for WhatsAI - one command setup",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "whatsapp-web.js": "^1.25.0",
+    "express": "^4.18.2",
+    "qrcode": "^1.5.3"
+  }
+}
